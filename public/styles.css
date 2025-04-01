@@ -93,4 +93,26 @@ button:hover {
     justify-content: space-between;
     padding: 5px 0;
     border-bottom: 1px solid #eee;
+}
+
+.error-message {
+    background-color: #ff4444;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+    }
+    to {
+        transform: translateY(0);
+    }
 } 

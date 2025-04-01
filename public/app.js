@@ -27,10 +27,12 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadExpenses() {
     try {
         const response = await fetch(`${API_URL}/expenses`);
+        if (!response.ok) throw new Error('Failed to fetch expenses');
         const expenses = await response.json();
         displayExpenses(expenses);
     } catch (error) {
         console.error('Error loading expenses:', error);
+        showError('Failed to load expenses. Please try again later.');
     }
 }
 
@@ -41,6 +43,9 @@ async function loadSummary() {
             fetch(`${API_URL}/expenses/by-category`)
         ]);
 
+        if (!totalResponse.ok || !categoryResponse.ok) 
+            throw new Error('Failed to fetch summary');
+
         const { total } = await totalResponse.json();
         const categories = await categoryResponse.json();
 
@@ -48,38 +53,51 @@ async function loadSummary() {
         displayCategories(categories);
     } catch (error) {
         console.error('Error loading summary:', error);
+        showError('Failed to load summary. Please try again later.');
     }
 }
 
 async function addExpense(expense) {
     try {
-        await fetch(`${API_URL}/expenses`, {
+        const response = await fetch(`${API_URL}/expenses`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(expense)
         });
+        
+        if (!response.ok) throw new Error('Failed to add expense');
     } catch (error) {
         console.error('Error adding expense:', error);
+        showError('Failed to add expense. Please try again.');
     }
 }
 
 async function deleteExpense(id) {
     try {
-        await fetch(`${API_URL}/expenses/${id}`, {
+        const response = await fetch(`${API_URL}/expenses/${id}`, {
             method: 'DELETE'
         });
+        
+        if (!response.ok) throw new Error('Failed to delete expense');
+        
         loadExpenses();
         loadSummary();
     } catch (error) {
         console.error('Error deleting expense:', error);
+        showError('Failed to delete expense. Please try again.');
     }
 }
 
 function displayExpenses(expenses) {
     const expensesList = document.getElementById('expensesList');
     expensesList.innerHTML = '';
+
+    if (expenses.length === 0) {
+        expensesList.innerHTML = '<p>No expenses found. Add your first expense!</p>';
+        return;
+    }
 
     expenses.forEach(expense => {
         const expenseElement = document.createElement('div');
@@ -105,6 +123,11 @@ function displayCategories(categories) {
     const categoryBreakdown = document.getElementById('categoryBreakdown');
     categoryBreakdown.innerHTML = '<h3>Category Breakdown:</h3>';
 
+    if (Object.keys(categories).length === 0) {
+        categoryBreakdown.innerHTML += '<p>No categories found.</p>';
+        return;
+    }
+
     Object.entries(categories).forEach(([category, amount]) => {
         const categoryElement = document.createElement('div');
         categoryElement.className = 'category-item';
@@ -114,4 +137,15 @@ function displayCategories(categories) {
         `;
         categoryBreakdown.appendChild(categoryElement);
     });
+}
+
+function showError(message) {
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message';
+    errorDiv.textContent = message;
+    document.body.insertBefore(errorDiv, document.body.firstChild);
+    
+    setTimeout(() => {
+        errorDiv.remove();
+    }, 5000);
 } 

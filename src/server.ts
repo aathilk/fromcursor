@@ -12,7 +12,12 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Connect to MongoDB
-connectDB();
+connectDB().then(() => {
+    console.log('Connected to MongoDB');
+}).catch((error) => {
+    console.error('MongoDB connection error:', error);
+    process.exit(1);
+});
 
 // Middleware
 app.use(cors());
@@ -28,6 +33,7 @@ app.get('/api/expenses', async (req, res) => {
         const expenses = await tracker.getExpenses();
         res.json(expenses);
     } catch (error) {
+        console.error('Error fetching expenses:', error);
         res.status(500).json({ error: 'Failed to fetch expenses' });
     }
 });
@@ -38,6 +44,7 @@ app.post('/api/expenses', async (req, res) => {
         const expense = await tracker.addExpense(description, amount, category);
         res.json(expense);
     } catch (error) {
+        console.error('Error adding expense:', error);
         res.status(500).json({ error: 'Failed to add expense' });
     }
 });
@@ -47,6 +54,7 @@ app.delete('/api/expenses/:id', async (req, res) => {
         const success = await tracker.deleteExpense(req.params.id);
         res.json({ success });
     } catch (error) {
+        console.error('Error deleting expense:', error);
         res.status(500).json({ error: 'Failed to delete expense' });
     }
 });
@@ -56,6 +64,7 @@ app.get('/api/expenses/total', async (req, res) => {
         const total = await tracker.getTotalExpenses();
         res.json({ total });
     } catch (error) {
+        console.error('Error fetching total:', error);
         res.status(500).json({ error: 'Failed to fetch total expenses' });
     }
 });
@@ -65,8 +74,14 @@ app.get('/api/expenses/by-category', async (req, res) => {
         const categories = await tracker.getExpensesByCategory();
         res.json(categories);
     } catch (error) {
+        console.error('Error fetching categories:', error);
         res.status(500).json({ error: 'Failed to fetch expenses by category' });
     }
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.json({ status: 'ok' });
 });
 
 // Start server
