@@ -1,0 +1,15 @@
+// (C) 1994-2025 Rocket Software, Inc. or its affiliates.
+// ROCKET SOFTWARE, INC. CONFIDENTIAL
+// (C) 1994-2025 Rocket Software, Inc. or its affiliates.
+// ROCKET SOFTWARE, INC. CONFIDENTIAL
+// (C) 1994-2025 Rocket Software, Inc. or its affiliates.
+// ROCKET SOFTWARE, INC. CONFIDENTIAL
+/*Copyright (c) Microsoft Corporation */
+/*Copyright (c) Microsoft Corporation */
+var student:any={
+    name:"aathil",
+    age:22,
+}
+
+var{first,agee}=student;
+console.log(first,agee)
